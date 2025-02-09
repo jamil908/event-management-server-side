@@ -99,11 +99,11 @@ async function run() {
     });
 
     app.post("/events",verifyToken, async (req, res) => {
-      const { eventName, description, eventDate, eventImage } = req.body;
-      if (!eventName || !description || !eventDate || !eventImage) {
+      const { eventName, description, eventDate, eventImage ,category} = req.body;
+      if (!eventName || !description || !eventDate || !eventImage || !category) {
         return res.status(400).send({ error: "All fields are required" });
       }
-      const newEvent = { eventName, description, eventDate, eventImage, participants: 0 };
+      const newEvent = { eventName, description, eventDate, eventImage, participants: 0 ,category};
       const result = await eventsCollection.insertOne(newEvent);
       res.status(201).send({ success: true, message: "Event added successfully!" });
     });
