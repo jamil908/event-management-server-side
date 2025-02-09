@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*",
+    origin: "https://event-management-server-side-wine.vercel.app",
     methods: ["GET", "POST"],
   },
 });
@@ -32,8 +32,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.db("admin").command({ ping: 1 });
-    console.log("✅ Connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("✅ Connected to MongoDB!");
 
     const usersCollection = client.db("eventManagement").collection("users");
     const eventsCollection = client.db("eventManagement").collection("events");
@@ -98,7 +98,7 @@ async function run() {
       }
     });
 
-    app.post("/events", async (req, res) => {
+    app.post("/events",verifyToken, async (req, res) => {
       const { eventName, description, eventDate, eventImage } = req.body;
       if (!eventName || !description || !eventDate || !eventImage) {
         return res.status(400).send({ error: "All fields are required" });
@@ -131,7 +131,7 @@ async function run() {
     });
 
     // 🗑️ Delete Event
-    app.delete("/events/:id", async (req, res) => {
+    app.delete("/events/:id",verifyToken, async (req, res) => {
       const eventId = req.params.id;
       if (!ObjectId.isValid(eventId)) return res.status(400).send({ error: "Invalid event ID" });
 
@@ -149,7 +149,7 @@ async function run() {
     });
 
     // 🔄 Update Event
-    app.put("/events/:id", async (req, res) => {
+    app.put("/events/:id",verifyToken, async (req, res) => {
       const eventId = req.params.id;
       if (!ObjectId.isValid(eventId)) return res.status(400).send({ error: "Invalid event ID" });
 
